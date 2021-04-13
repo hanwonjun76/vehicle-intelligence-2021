@@ -20,7 +20,7 @@ def initialize_priors(map_size, landmarks, stdev):
             c += 1
     # Calculate actual probability to be uniformly distributed.
     prob = 1.0 / len(positions)
-    # Set the probability to each position.
+    # Set the probability to each position.s
     for p in positions:
         priors[p] += prob
     return priors
@@ -42,9 +42,19 @@ def motion_model(position, mov, priors, map_size, stdev):
     # Initialize the position's probability to zero.
     position_prob = 0.0
 
+
+    probs_ay =[]
+
+    for i in range(map_size):
+     
+        w = norm_pdf(position-i, mov, stdev)*priors[i]
+        probs_ay.append(w) 
+    
+    position_prob = sum(probs_ay)
+
     # TODO: Loop over state space for all possible prior positions,
-    # calculate the probability (using norm_pdf) of the vehicle
-    # moving to the current position from that prior.
+    # calculate the probability (using norm_pdf) of the vehicle 
+    # # moving to the current position from that prior.
     # Multiply this probability to the prior probability of
     # the vehicle "was" at that prior position.
     return position_prob
@@ -53,7 +63,23 @@ def motion_model(position, mov, priors, map_size, stdev):
 def observation_model(landmarks, observations, pseudo_ranges, stdev):
     # Initialize the measurement's probability to one.
     distance_prob = 1.0
+    
 
+    if len(observations)==0 or len(observations)> len(pseudo_ranges): 
+        distance_prob =0.0
+    else:
+
+        for i in range(len(observations)):
+            d = observations[i]
+            mu = pseudo_ranges[i]
+            sig = stdev
+            L = norm_pdf(d, mu, sig)
+            distance_prob *= L
+
+
+
+
+    return distance_prob
     # TODO: Calculate the observation model probability as follows:
     # (1) If we have no observations, we do not have any probability.
     # (2) Having more observations than the pseudo range indicates that
@@ -64,9 +90,7 @@ def observation_model(landmarks, observations, pseudo_ranges, stdev):
     #     d: observation distance
     #     mu: expected mean distance, given by pseudo_ranges
     #     sig: squared standard deviation of measurement
-    return distance_prob
-
-# Normalize a probability distribution so that the sum equals 1.0.
+    # # Normalize a probability distribution so that the sum equals 1.0.
 def normalize_distribution(prob_dist):
     normalized = [0.0] * len(prob_dist)
     total = sum(prob_dist)
