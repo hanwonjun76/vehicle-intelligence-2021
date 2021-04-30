@@ -13,11 +13,11 @@
 - postion_prob는 total probability 값을 계산해 준 변수이다. 
 
 
-'''
+~~~
 def motion_model(position, mov, priors, map_size, stdev):
     # Initialize the position's probability to zero.
     position_prob = 0.0
-'''
+~~~
 
     probs_ay =[]
 
