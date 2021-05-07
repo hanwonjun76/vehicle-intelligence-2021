@@ -17,14 +17,11 @@ class GNB():
     # Initialize classification categories
     def __init__(self):
         self.classes = ['left', 'keep', 'right']
-
+    
     # Given a set of variables, preprocess them for feature engineering.
-    def process_vars(self, vars):
-        # The following implementation simply extracts the four raw values
-        # given by the input data, i.e. s, d, s_dot, and d_dot.
-        s, d, s_dot, d_dot = vars
-        return s, d, s_dot, d_dot
-
+    def process_vars(self, X):
+        return X
+    
     # Train the GNB using a combination of X and Y, where
     # X denotes the observations (here we have four variables for each) and
     # Y denotes the corresponding labels ("left", "keep", "right").
@@ -35,6 +32,25 @@ class GNB():
         '''
         # TODO: implement code.
 
+        self.x = np.array(X)
+        self.y = np.array(Y)
+
+        groupby=list(set(Y))
+        result=dict()
+
+        for ip in groupby:
+            result[ip]=Y.count(ip)
+   
+        cnt = list(result.values())
+
+        self.prior_prob = [cnt[0]/len(Y), cnt[1]/len(Y), cnt[2]/len(Y)]
+
+        self.mu = np.array([self.x[np.where(self.y==i)].mean(axis=0) for i in self.classes])
+        self.st = np.array([self.x[np.where(self.y==i)].std(axis=0) for i in self.classes])
+
+        return self
+
+       
     # Given an observation (s, s_dot, d, d_dot), predict which behaviour
     # the vehicle is going to take using GNB.
     def predict(self, observation):
@@ -46,5 +62,15 @@ class GNB():
         Return the label for the highest conditional probability.
         '''
         # TODO: implement code.
-        return "keep"
 
+        prob = np.zeros(len(self.classes))
+
+        for i in range(len(self.classes)):
+            a = 1
+            for j in range(self.x.shape[1]):
+                a *= gaussian_prob(observation[j], self.mu[i][j], self.st[i][j])
+                prob[i] = a
+
+                res = prob / prob.sum()
+
+        return self.classes[res.argmax(axis=0)]
