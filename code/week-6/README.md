@@ -49,7 +49,67 @@
 - 위 그림과 같이 84%의 확률을 결과값으로 볼 수 있음을 확인할 수 있다.
 ---
 ## -Behaviour Planning-
+### 1st 
+- 아래 코드의 경우 predicted trajectory 값들을 고려하여 cost function을 통해 optimal path를 생성한다.
+- FSM 기반으로 한 함수를 사용하여 다음 sample의 vehicle state를 구한다.
+- min_cost와 best_next_state를 initialization해준다.
+- state와 prediction을 고려하여 trajectory를 생성한다.
+- 위의 과정을 반복하여 여러개의 trajectory를 생성하고 cost를 저장한다.
+- 그리고 생성된 trajectory의 cost가 이전 sample의 cost보다 작으면(cost < min_cost) 그 값을 다시 min_cost에 저장한다.
+- 이후 가장 적은 cost의 state를 반영하여 최적의 trajectory를 생성한다.
+#
+	state = self.successor_states()
+		min_cost = 9999999
+		best_next_state = None
+		cost_array = []
 
+		for st in state:
+
+		    t = self.generate_trajectory(st, predictions)
+		    cost = calculate_cost(self, t, predictions)
+		    cost_array.append({'cost': cost, 'state': st, 'trajectory': t})  
+
+		for k in cost_array:
+		    if k['cost'] < min_cost:
+			min_cost = k['cost']
+			best_next_state = k['state']
+
+		best_trajectory = self.generate_trajectory(best_next_state, predictions)
+
+		return best_trajectory 
+#
+---
+### 2nd
+- goal_distance_cost 를 통해 goal과 현재의 위치에 따라 cost를 부여한다.
+- final lane과 intended lane 사이의 cost에 대한 정의를 1-exp(-t)로 정의하였다.
+- inefficiency_cost를 통해서는 차량의 속도를 반영하여 intended lane, final lane의 속도를 비교하여 느린 lane에 cost를 더 부여하게 된다.
+#
+	def goal_distance_cost(vehicle, trajectory, predictions, data):
+
+	    goal_distance = data[2]
+
+	    if goal_distance / vehicle.goal_s > 0.4:
+		    cost = 0.0
+	    elif goal_distance > 0:
+		    cost = 1 - exp((vehicle.goal_lane - data[0] + vehicle.goal_lane - data[1]) / (data[2]))
+	    else:
+		    cost = 1
+	    print("goal_distance_cost:", cost)
+	    return cost
+
+	def inefficiency_cost(vehicle, trajectory, predictions, data):
+
+	    int_lane = data[0]
+	    final_lane = data[1]
+	    goal_dist = data[2]
+
+	    if goal_dist / vehicle.goal_s > 0.4:
+		    cost = exp(-(int_lane + final_lane))
+	    else:
+		    cost = 1 - exp(-(int_lane + final_lane))
+	    # print(cost)
+    return cost
+#
 
 ## Assignment #1
 
