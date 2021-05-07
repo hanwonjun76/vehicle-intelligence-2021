@@ -12,7 +12,7 @@
 - 현재의 위치값 position-i, 평균 이동거리 mov, 이동에 대한 표준 편차 stev를 통해 확률을 gaussian distribution 형태로 만들어 주었다.
 - postion_prob는 total probability 값을 계산해 준 변수이다. 
 
-~~~
+#
     def motion_model(position, mov, priors, map_size, stdev):
         #Initialize the position's probability to zero.
         position_prob = 0.0
@@ -24,7 +24,7 @@
                 probs_ay.append(w) 
     
     position_prob = sum(probs_ay)
-~~~    
+
     
 - observation model의 경우 motion model에 대한 uncertainty를 보완해주는 계측 모델 값이다.
 - landmark에 대한 관측값이 0이거나, 보다 많은 수가 관측되면 신뢰성 없음으로 간주하게 된다. 
