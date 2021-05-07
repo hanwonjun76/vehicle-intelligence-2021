@@ -24,19 +24,21 @@
                 probs_ay.append(w) 
     
     position_prob = sum(probs_ay)
+#
 
-    
+
 - observation model의 경우 motion model에 대한 uncertainty를 보완해주는 계측 모델 값이다.
 - landmark에 대한 관측값이 0이거나, 보다 많은 수가 관측되면 신뢰성 없음으로 간주하게 된다. 
 
-def observation_model(landmarks, observations, pseudo_ranges, stdev):
-    # Initialize the measurement's probability to one.
-    distance_prob = 1.0
+#
+    def observation_model(landmarks, observations, pseudo_ranges, stdev):
+        # Initialize the measurement's probability to one.
+        distance_prob = 1.0
     
 
-    if len(observations)==0 or len(observations)> len(pseudo_ranges): 
+      if len(observations)==0 or len(observations)> len(pseudo_ranges): 
         distance_prob =0.0
-    else:
+      else:
 
         for i in range(len(observations)):
             d = observations[i]
@@ -45,7 +47,7 @@ def observation_model(landmarks, observations, pseudo_ranges, stdev):
             L = norm_pdf(d, mu, sig)
             distance_prob *= L
 
-
+#
 
 ![Expected Result of Markov Localization][plot]
 
