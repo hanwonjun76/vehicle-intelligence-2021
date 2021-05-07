@@ -110,7 +110,10 @@
 	    # print(cost)
     return cost
 #
-
+---
+# RESULT
+![image](https://user-images.githubusercontent.com/80083729/117494047-c2110e00-afae-11eb-81fa-90fb891ea494.png)
+- 다음과 같은 결과 값을 돌출할 수 있었다.
 ## Assignment #1
 
 Under the directory [./GNB](./GNB), you are given two Python modules:
