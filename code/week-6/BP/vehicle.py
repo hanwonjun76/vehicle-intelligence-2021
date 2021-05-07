@@ -38,6 +38,7 @@ class Vehicle(object):
         1. successor_states():
             Returns a vector of possible successor states
             for the finite state machine.
+        
 
         2. generate_trajectory(self, state, predictions):
             Returns a vector of Vehicle objects representing a
@@ -52,16 +53,39 @@ class Vehicle(object):
             Imported from cost_functions.py, computes the cost for
             a trajectory.
         '''
+ 
+        state = self.successor_states()
+        min_cost = 9999999
+        best_next_state = None
+        cost_array = []
+
+        for st in state:
+            
+            t = self.generate_trajectory(st, predictions)
+            cost = calculate_cost(self, t, predictions)
+            cost_array.append({'cost': cost, 'state': st, 'trajectory': t})  
+
+        for k in cost_array:
+            if k['cost'] < min_cost:
+                min_cost = k['cost']
+                best_next_state = k['state']
+
+        best_trajectory = self.generate_trajectory(best_next_state, predictions)
+
+        return best_trajectory 
+            
+        
+
+
+
 
         # TODO: implement state transition function based on the cost
         #       associated with each transition.
 
         # Note that the return value is a trajectory, where a trajectory
         # is a list of Vehicle objects with two elements.
-        return [
-            Vehicle(self.lane, self.s, self.v, self.a, self.state),
-            Vehicle(self.lane, self.position_at(1), self.v, 0, self.state)
-        ]
+    
+     
 
     def successor_states(self):
         '''
