@@ -1,6 +1,55 @@
 # Week 6 - Prediction & Behaviour Planning
-
+## -Gaussian Naive Bayed Classifier-
 ---
+- 과제: Gaussian Naive Bayed Classifier를 통해 차량의 주행경로를 예측하는 algorithm을 구현한다.
+#
+	def train(self, X, Y):
+
+
+		self.x = np.array(X)
+		self.y = np.array(Y)
+
+		groupby=list(set(Y))
+		result=dict()
+
+		for ip in groupby:
+		    result[ip]=Y.count(ip)
+
+		cnt = list(result.values())
+
+		self.prior_prob = [cnt[0]/len(Y), cnt[1]/len(Y), cnt[2]/len(Y)]
+
+		self.mu = np.array([self.x[np.where(self.y==i)].mean(axis=0) for i in self.classes])
+		self.st = np.array([self.x[np.where(self.y==i)].std(axis=0) for i in self.classes])
+
+		return self
+	def predict(self, observation):
+
+
+		prob = np.zeros(len(self.classes))
+
+		for i in range(len(self.classes)):
+		    a = 1
+		    for j in range(self.x.shape[1]):
+			a *= gaussian_prob(observation[j], self.mu[i][j], self.st[i][j])
+			prob[i] = a
+
+			res = prob / prob.sum()
+
+		return self.classes[res.argmax(axis=0)]
+#
+- GNB Algorithm는 차량의 주행경로(left,keep,right)에 대한 data 수집 및 이를 통해 각 class에 대한  평균과 표준편차를 계산해준다.
+- 계산된 평균과 표준편차는 Prediction과정에서 사용된다.
+- 먼저, def.train에선 X,Y를 통해 사전 확률을 계산하고 Y_index를 통해 그에 matching 되는 X_index의 평균과 표준편차를 계산한다.
+- 후에 def.predict에선 관측 데이터에 대한 확률을 Gaussian을 통해 계산해주고 prior를 곱해준다.
+- 이후, total probability로 나눠주어 normalization해준다.
+---
+# RESULT
+![image](https://user-images.githubusercontent.com/80083729/117477190-a995f900-af98-11eb-916d-1ab076d7b288.png)
+- 위 그림과 같이 84%의 확률을 결과값으로 볼 수 있음을 확인할 수 있다.
+---
+## -Behaviour Planning-
+
 
 ## Assignment #1
 
