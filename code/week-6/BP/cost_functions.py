@@ -32,14 +32,32 @@ def goal_distance_cost(vehicle, trajectory, predictions, data):
     Cost of being out of goal lane also becomes larger as vehicle approaches
     the goal distance.
     '''
-    return 0
+    goal_distance = data[2]
+
+    if goal_distance / vehicle.goal_s > 0.4:
+	    cost = 0.0
+    elif goal_distance > 0:
+	    cost = 1 - exp((vehicle.goal_lane - data[0] + vehicle.goal_lane - data[1]) / (data[2]))
+    else:
+	    cost = 1
+    print("goal_distance_cost:", cost)
+    return cost
 
 def inefficiency_cost(vehicle, trajectory, predictions, data):
     '''
     Cost becomes higher for trajectories with intended lane and final lane
     that have slower traffic.
     '''
-    return 0
+    int_lane = data[0]
+    final_lane = data[1]
+    goal_dist = data[2]
+
+    if goal_dist / vehicle.goal_s > 0.4:
+	    cost = exp(-(int_lane + final_lane))
+    else:
+	    cost = 1 - exp(-(int_lane + final_lane))
+    # print(cost)
+    return cost
 
 def calculate_cost(vehicle, trajectory, predictions):
     '''
@@ -70,7 +88,6 @@ def get_helper_data(vehicle, trajectory, predictions):
     final_lane: The lane of the vehicle at the end of the trajectory.
                 The lane is unchanged for KL and LCL/LCR trajectories.
     distance_to_goal: The s distance of the vehicle to the goal.
-
     Note that indended_lane and final_lane are both included to help
     differentiate between planning and executing a lane change
     in the cost functions.
