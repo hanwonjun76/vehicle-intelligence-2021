@@ -9,7 +9,6 @@
 #
 
 - 위에서 linearlization된 H_j matrix와 공분산 matrix P, measurment noise matrix를 이용하여 S matrix를 구하고 이를 통해 kalman gain을 얻을 수 있다.
-
  # 
         #2. Calculate S = H_j * P' * H_j^T + R
                 S = np.dot(np.dot(H_j, self.P), H_j.T) + self.R #shape (3,3)
