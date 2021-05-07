@@ -1,62 +1,54 @@
 # Week 3 - Kalman Filters, EKF and Sensor Fusion
--자코비안 함수를 통해 obsesrvation model을 linearliztion 해주었다.
-<pre>
-<code>
+- Kalman filter와 다르게 EKF(Extended Kalman Filter)는 비선형의 state model과 observation model을 선형화하여 특정 point에서 covariance를 계산하여 특정 parameter를 추정하는 algorithm이다.
+- 따라서 다음 아래 코드는 자코비안 함수를 통해 비선형의 obsesrvation model을 linearliztion 해주는 작업이다.
+#
         #1. Compute Jacobian Matrix H_j
-        H_j = Jacobian(self.x) # shape (4,4)
-</code>
-</pre>
+                
+                H_j = Jacobian(self.x) # shape (4,4)
 
--위에서 linearlization된 H_j matrix와 공분산 matrix P, measurment noise matrix를 이용하여 S matrix를 구하고 이를 통해 kalman gain을 얻을 수 있다.
-<pre>
-<code>
- # 2. Calculate S = H_j * P' * H_j^T + R
-        S = np.dot(np.dot(H_j, self.P), H_j.T) + self.R #shape (3,3)
-        # 3. Calculate Kalman gain K = H_j * P' * Hj^T + R
-        K = np.dot(np.dot(self.P, H_j.T), np.linalg.inv(S)) #shape (4,3)
-</code>
-</pre>
-       
+#
+
+- 위에서 linearlization된 H_j matrix와 공분산 matrix P, measurment noise matrix를 이용하여 S matrix를 구하고 이를 통해 kalman gain을 얻을 수 있다.
+
+ # 
+        #2. Calculate S = H_j * P' * H_j^T + R
+                S = np.dot(np.dot(H_j, self.P), H_j.T) + self.R #shape (3,3)
+                
+        # 3. Calculate Kalman gain 
+                K = H_j * P' * Hj^T + R
+                K = np.dot(np.dot(self.P, H_j.T), np.linalg.inv(S)) #shape (4,3)
+
+#
 - measurement model과 non-linear model식을 이용하여 두 model사이의 오차값을 계산 해 준다. 
-<pre>
-<code>
-h = np.array([
+#
+        h = np.array([
             [sqrt(self.x[0]*self.x[0] + self.x[1]*self.x[1])],
             [atan2(self.x[1],self.x[0])],
             [(self.x[0]*self.x[2]+self.x[1]*self.x[3])/(sqrt(self.x[0]*self.x[0] + self.x[1]*self.x[1]))]
         ], dtype=np.float32) #shape (3,3)
         
         h = np.ravel(h)
-        # z1 = np.array([[z[0],],
-        # [z[1],],
-        # [z[2],]
-        # ])
+        z1 = np.array([[z[0],],
+        [z[1],],
+        [z[2],]
+        ])
     
         y = z-h #shpae (3,1)
-</code>
-</pre>
-        
+# 
  - 차량의 위치와 map coordinate가 이루는 각을 phi라고 정하고 이 phi의 범위를 -phi<x<phi로 normalization해준다. 
-<pre>
-<code>
-    if y[1]> np.pi:
+#        
+        if y[1]> np.pi:
             y[1] = y[1]- 2*np.pi
 
         elif y[1]<-np.pi:
             y[1] = y[1] + 2*np.pi
-</code>
-</pre>
-         
-
-
+#  
 - 마지막으로 위에서 구한 kalman gain을 통해 state model과 observation model사이의 weight를 주어 자차의 위치를 estimation하게 된다.
-<pre>
-<code>
+#
         self.x = self.x + np.dot(K, y)
         #    P = (I - K * H_j) * P
         self.P = self.P - np.dot(np.dot(K, H_j), self.P)
-</code>
-</pre>
+#
 
 [//]: # (Image References)
 [kalman-result]: ./kalman_filter/graph.png
