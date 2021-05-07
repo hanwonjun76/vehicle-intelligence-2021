@@ -8,7 +8,8 @@
 ## Assignment
 
 - 처음 위치에 대한 probability를 '0'으로 초기화 한다.
-- Motion Model은 Markov assumption으로 직전 위치의 확률과 오브젝트의 이동으로 현재 위치를 예측한다.
+- Motion Model은 Markov assumption으로 직전 위치의 확률과 Object의 movement에 대한 현재 위치를 예측한다.
+- 여기서  Markov assumption이란  Completeness of a state에 대한 개념을 전제로 현재의 state는 이전 state와 현재의 input value에 의해 추정될 수 있다는 가정이다.(HMM or DBN이라고도 한다.)
 - 현재의 위치값 position-i, 평균 이동거리 mov, 이동에 대한 표준 편차 stev를 통해 확률을 gaussian distribution 형태로 만들어 주었다.
 - postion_prob는 total probability 값을 계산해 준 변수이다. 
 
